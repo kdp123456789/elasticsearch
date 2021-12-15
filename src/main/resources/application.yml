@@ -1,0 +1,36 @@
+server:
+  port: 80
+jasypt:
+  encryptor:
+    password: PWDSalt
+
+spring:
+  datasource:
+    dynamic:
+      primary: master #默认分支
+      strict: false #�ϸ�ƥ������Դ,Ĭ��false. trueδƥ�䵽ָ������Դʱ���쳣,falseʹ��Ĭ������Դ
+      datasource:
+        master:
+          #����
+          url: jdbc:mysql://172.18.34.178:3306/wh_assess?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8
+          username: root
+          password: root_123456
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        slave_1:
+          #app
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://172.18.34.178:3306/pension_app?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8
+          username: root
+          password: root_123456
+        slave_2:
+          #����
+          #PWDSalt  盐
+          #PBEWithMD5AndDES  加密方式
+          url: ENC(1puS2evNWgobGRivm29j1aHlyTPYfgi8R0gaeL9eFRy2T+dM/BnX48lcJrJs8jqLq5G4ASUxRnMQ7Z2qANXS/yRwHnpeZFoYT/IuDygJ8ey5pjpVEcv19gsd9l6IexSPvxUznwcFxTa17Thrhc2rYzFS4Y+LR0Ck) # ���ü���,ʹ����鿴��ϸ�ĵ�
+          username: ENC(lYpkZuzhYqIhsp8zGsNBFA==)
+          password: ENC(MJ5tg83YxyRVfLq3lwe3X0lbQxdIoz4j)
+          driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
