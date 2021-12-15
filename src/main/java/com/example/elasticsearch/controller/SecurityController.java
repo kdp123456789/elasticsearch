@@ -10,6 +10,7 @@ public class SecurityController {
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public String login(){
+
         return "redirect:main.html";
     }
 
