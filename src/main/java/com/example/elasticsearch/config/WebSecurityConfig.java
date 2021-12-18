@@ -31,12 +31,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/security/login")
 
                 //登录成功后跳转页面(必须是post)        ->通过loadUserByUsername方法后->调用后台接口方法（/security/login）
-//                .successForwardUrl("/security/login")
-                .successHandler(new MyAuthenticationSuccessHandler("http://www.baidu.com")) //另一种方式，直接重定向页面，或者用post走后台
+                .successForwardUrl("/security/login")
+//                .successHandler(new MyAuthenticationSuccessHandler("http://www.baidu.com")) //另一种方式，直接重定向页面，或者用post走后台
 
                 //登录失败后跳转的页面(必须是post)       ->失败后调用后台接口方法（/security/toError）
-//                .failureForwardUrl("/security/toError")
-                .failureHandler(new MyForwardAuthenticationFailureHandler("https://www.bilibili.com")) //另一种方式，直接重定向页面，或者用post走后台
+                .failureForwardUrl("/security/toError")
+//                .failureHandler(new MyForwardAuthenticationFailureHandler("https://www.bilibili.com")) //另一种方式，直接重定向页面，或者用post走后台
 
                 //自定义用户名参数
                 .usernameParameter("username")
@@ -50,8 +50,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login.html").permitAll()
                 //放行失败登录页面
                 .antMatchers("/error.html").permitAll()
+                //放行自定义文件
+                .antMatchers("/**/*.jpg").permitAll()
+                //权限    通过权限匹配（只有admin权限的人才能进去main1.html）
+//                .antMatchers("/main1.html").hasAnyAuthority("admin","normal")
+                //角色    通过权限匹配（只有admin权限的人才能进去main1.html）
+                .antMatchers("/main1.html").hasAnyRole("-abc")
+                //根据ip匹配    基于ip控制（只有admin权限的人才能进去main1.html）
+//                .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
                 //所有请求都必须认证
                 .anyRequest().authenticated();
+
+        //异常处理
+        http.exceptionHandling()
+                //accessDeniedHandler自定义返回json，accessDeniedPage自定义返回页面
+                .accessDeniedHandler(new MyAccessDeniedHandler())
+//                .accessDeniedPage("/error/403.html")
+        ;
 
         //关闭csrf防护，要不然不能进去自定义登录逻辑里的方法
         http.csrf().disable();
