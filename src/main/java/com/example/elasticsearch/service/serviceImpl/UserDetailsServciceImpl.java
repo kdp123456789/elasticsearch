@@ -25,6 +25,7 @@ public class UserDetailsServciceImpl implements UserDetailsService {
         //2.查询对象比较密码
         String password = passwordEncoder.encode("123456");
         //返回用户对象   ROLE_(角色固定前缀)
-        return new User("admin",password, AuthorityUtils.commaSeparatedStringToAuthorityList("admin,normal,ROLE_abc"));
+        return new User("admin",password,
+                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,normal,ROLE_abc,/security/main.html"));
     }
 }

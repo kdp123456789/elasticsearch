@@ -58,8 +58,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/main1.html").hasAnyRole("-abc")
                 //根据ip匹配    基于ip控制（只有admin权限的人才能进去main1.html）
 //                .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
-                //所有请求都必须认证
-                .anyRequest().authenticated();
+
+                //所有请求都必须认证  或者自定义access逻辑（通过用户拥有的权限来访问）
+//                .anyRequest().authenticated();
+                .anyRequest().access("@myAccessServiceImpl.hasPermisson(request,authentication)");
 
         //异常处理
         http.exceptionHandling()
