@@ -3,6 +3,8 @@ package com.example.elasticsearch;
 import com.alibaba.fastjson.JSON;
 import com.example.elasticsearch.bean.User;
 import com.example.elasticsearch.service.DSOneService;
+import com.example.elasticsearch.service.MyAccessService;
+import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -26,13 +28,12 @@ import javax.annotation.Resource;
 import java.io.IOException;
 
 @SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ElasticsearchApplicationTests {
 
-    @Resource
-    private DSOneService dsOneService;
-
-    @Autowired
-    private RestHighLevelClient client;
+    private final DSOneService dsOneService;
+    private final MyAccessService myAccessService;
+    private final RestHighLevelClient client;
 
     /**
      * 创建索引
