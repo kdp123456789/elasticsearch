@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-
 public class DSOneServiceImpl implements DSOneService {
 
     @Resource

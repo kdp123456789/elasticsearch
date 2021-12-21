@@ -1,12 +1,19 @@
 package com.example.elasticsearch.config;
 
+import com.example.elasticsearch.service.serviceImpl.UserDetailsServciceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
 
 /**
  * Security配置类
@@ -15,9 +22,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String REM_KEY = "INTERNAL_SECRET_KEY";
+
+    @Autowired
+    public DataSource dataSource;
+    @Autowired
+    public JdbcTokenRepositoryImpl jdbcTokenRepository;
+    @Autowired
+    public UserDetailsServciceImpl userDetailsServcice;
+
     @Bean
     public PasswordEncoder pw() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JdbcTokenRepositoryImpl tokenRepository() {
+        //两种实现 InMemoryTokenRepositoryImpl---基于内存    JdbcTokenRepositoryImpl---基于jdbc
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        //设置数据源
+        jdbcTokenRepository.setDataSource(dataSource);
+        //是否创建表  第一次需要，后面注释掉
+//        jdbcTokenRepository.setCreateTableOnStartup(true);
+
+        return jdbcTokenRepository;
     }
 
     @Override
@@ -55,13 +83,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //权限    通过权限匹配（只有admin权限的人才能进去main1.html）
 //                .antMatchers("/main1.html").hasAnyAuthority("admin","normal")
                 //角色    通过权限匹配（只有admin权限的人才能进去main1.html）
-                .antMatchers("/main1.html").hasAnyRole("-abc")
+//                .antMatchers("/main1.html").hasAnyRole("abc")
                 //根据ip匹配    基于ip控制（只有admin权限的人才能进去main1.html）
 //                .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
 
                 //所有请求都必须认证  或者自定义access逻辑（通过用户拥有的权限来访问）
-//                .anyRequest().authenticated();
-                .anyRequest().access("@myAccessServiceImpl.hasPermisson(request,authentication)");
+                .anyRequest().authenticated();
+//                .anyRequest().access("@myAccessServiceImpl.hasPermisson(request,authentication)");
 
         //异常处理
         http.exceptionHandling()
@@ -69,6 +97,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(new MyAccessDeniedHandler())
 //                .accessDeniedPage("/error/403.html")
         ;
+
+        //记住我
+        http.rememberMe()
+                //自定义逻辑  必须要
+                .userDetailsService(userDetailsServcice)
+                //入参名称
+                .rememberMeParameter("rememberme")
+                //超时时间--秒  默认是14天
+//                .tokenValiditySeconds(20)
+                //自定义记住我的实现
+//                .rememberMeServices(null);
+                //指定存储位置
+                .tokenRepository(jdbcTokenRepository);
 
         //关闭csrf防护，要不然不能进去自定义登录逻辑里的方法
         http.csrf().disable();

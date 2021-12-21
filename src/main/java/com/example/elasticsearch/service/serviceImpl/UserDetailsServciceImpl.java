@@ -1,6 +1,7 @@
 package com.example.elasticsearch.service.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ public class UserDetailsServciceImpl implements UserDetailsService {
         }
         //2.查询对象比较密码
         String password = passwordEncoder.encode("123456");
+
         //返回用户对象   ROLE_(角色固定前缀)
         return new User("admin",password,
                 AuthorityUtils.commaSeparatedStringToAuthorityList("admin,normal,ROLE_abc,/security/main.html"));
